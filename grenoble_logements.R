@@ -68,3 +68,33 @@ stationnementpersCOMMUNE$Sans <- as.numeric(gsub("[$]","",gsub("[,]","",stationn
 
 stationnementpersCOMMUNE <- stationnementpersCOMMUNE %>%
   mutate(prctAvec = ((Avec)*100/(Avec+Sans)))
+
+
+######        Faire une CAH sur les communes : ######
+# Créer deux classes d'âge 18 - 24 et 19 - 60 :
+
+ren_CAH <- grenoble %>%
+  select(COMMUNE, DIPLM_15, EMPLM, ILTM, ILETUDM, INEEM, INP24M, INP17M, INP19M, INP60M, INPAM, INPER, IPONDL, TRANSM, VOIT, GARL) %>% # Dégager les Y et les Z des âges
+  filter(!INPER == c("Y", "Z") & !INP24M == "Y" & !INP17M == "Y" & !INP19M == "Y" & !INP60M == "Y") %>%
+  mutate(INP1824 = ((as.numeric(INP24M)) - (as.numeric(INP17M))),
+         INP1960 = ((as.numeric(INP19M)) - (as.numeric(INP60M))),
+         ETUDSUP = case_when(DIPLM_15)) 
+
+# Recoder les variables qualitatives et sélectionner celles qui nous intéressent :   
+
+test_CAH <- grenoble %>%
+  select(COMMUNE, DIPLM_15, EMPLM, ILTM, ILETUDM, INEEM, INP24M, INP17M, INP19M, INP60M, INPAM, INPER, IPONDL, TRANSM, VOIT, GARL) %>% # Dégager les Y et les Z des âges
+  filter(!INPER == c("Y", "Z") & !INP24M == "Y" & !INP17M == "Y" & !INP19M == "Y" & !INP60M == "Y") %>%
+  mutate(INP1824 = ((as.numeric(INP24M)) - (as.numeric(INP17M))),
+         INP1960 = ((as.numeric(INP19M)) - (as.numeric(INP60M))),
+         ETUDSUP = case_when(DIPLM_15 == "D" ~ 1, !DIPLM_15 == "D" ~ 0),
+         TR_VOIT = case_when(TRANSM == "4" ~ 1, !TRANSM == "4" ~ 0),
+         TR_COMMUN = case_when(TRANSM == "5" ~ 1, !TRANSM == "5" ~ 0),
+         STATIONMENT = case_when(GARL == "1" ~ 1, !GARL == "1" ~ 0),
+         AUTRE_COM = case_when(ILTM == "2" ~ 1, !ILTM == "2" ~ 0)) %>% 
+  select(COMMUNE, INP1824, INP1960, INP60M, AUTRE_COM, INPAM, INPER, IPONDL, VOIT, TR_COMMUN, TR_VOIT, STATIONMENT)
+
+# Convertir les charactères en numeric : 
+
+
+

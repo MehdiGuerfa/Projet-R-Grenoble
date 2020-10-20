@@ -36,3 +36,35 @@ voiturespersCOMMUNE$VOIT_POP <-voiturespersCOMMUNE$VOIT/voiturespersCOMMUNE$POP
 voiturespersCOMMUNE<-voiturespersCOMMUNE[,c(1,6,7,8)]
 
 
+
+### emplacements de stationnement par personne dans les IRIS
+
+
+stationnementpersIRIS <- grenoble %>%
+  filter(GARL !="Z") %>%
+  group_by(IRIS,GARL) %>%
+  summarise(NB=sum(IPONDL)) %>%
+  spread(key = GARL, value=NB, fill=0)
+names(stationnementpersIRIS) <-c("IRIS","Avec","Sans")
+
+stationnementpersIRIS$Avec <- as.numeric(gsub("[$]","",gsub("[,]","",stationnementpersIRIS$Avec)))
+stationnementpersIRIS$Sans <- as.numeric(gsub("[$]","",gsub("[,]","",stationnementpersIRIS$Sans)))
+
+stationnementpersIRIS <- stationnementpersIRIS %>%
+  mutate(prctAvec = ((Avec)*100/(Avec+Sans)))
+
+
+### emplacements de stationnement par personne dans les communes
+
+stationnementpersCOMMUNE <- grenoble %>%
+  filter(GARL !="Z") %>%
+  group_by(COMMUNE,GARL) %>%
+  summarise(NB=sum(IPONDL)) %>%
+  spread(key = GARL, value=NB, fill=0)
+names(stationnementpersCOMMUNE) <-c("COMMUNE","Avec","Sans")
+
+stationnementpersCOMMUNE$Avec <- as.numeric(gsub("[$]","",gsub("[,]","",stationnementpersCOMMUNE$Avec)))
+stationnementpersCOMMUNE$Sans <- as.numeric(gsub("[$]","",gsub("[,]","",stationnementpersCOMMUNE$Sans)))
+
+stationnementpersCOMMUNE <- stationnementpersCOMMUNE %>%
+  mutate(prctAvec = ((Avec)*100/(Avec+Sans)))

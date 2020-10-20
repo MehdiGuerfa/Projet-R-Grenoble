@@ -42,3 +42,4 @@ voituresgrenoble <- gre %>%
          une=round(une),
          deux=round(deux),
          troisplus=round(troisplus)) # pour arrondir les deux variables
+#test

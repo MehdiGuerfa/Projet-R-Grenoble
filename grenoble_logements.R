@@ -43,3 +43,54 @@ voituresgrenoble <- gre %>%
          deux=round(deux),
          troisplus=round(troisplus)) # pour arrondir les deux variables
 #test
+
+### pour avoir la part des moyens de transports à grenoble (IRIS)
+
+moyenstransportgrenoble <- gre %>%
+  select(IRIS,TRANSM,IPONDL) %>% # sélection des colonnes
+  filter((!TRANSM %in% c("Z","Y"))) %>% # sélection des lignes
+  mutate(emplacement = as.character(TRANSM),
+         pasdetransport = case_when(TRANSM == "1" ~ IPONDL,!TRANSM == "1" ~ 0),
+         pieds = case_when(TRANSM == "2" ~ IPONDL,!TRANSM == "2" ~ 0),
+         deuxroues = case_when(TRANSM == "3" ~IPONDL, !TRANSM == "3" ~ 0),
+         voiture = case_when(TRANSM == "4" ~IPONDL, !TRANSM == "4" ~ 0),
+         transports = case_when(TRANSM == "5" ~IPONDL, !TRANSM == "5" ~ 0)) %>%
+  select(IRIS,pasdetransport, pieds, deuxroues, voiture, transports) %>% # sélection des variables à agréger
+  group_by(IRIS) %>% summarise_all(sum) %>% # agrégation par somme
+  mutate(pasdetransport=round(pasdetransport),
+         pieds=round(pieds),
+         deuxroues=round(deuxroues),
+         voiture=round(voiture),
+         transports=round(transports)) %>%
+  mutate(prctpasdetransport=((pasdetransport)*100/(pasdetransport+pieds+deuxroues+voiture+transports)),
+         prctpieds=((pieds)*100/(pasdetransport+pieds+deuxroues+voiture+transports)),
+         prctdeuxroues=((deuxroues)*100/(pasdetransport+pieds+deuxroues+voiture+transports)),
+         prctvoiture=((voiture)*100/(pasdetransport+pieds+deuxroues+voiture+transports)),
+         prcttransports=((transports)*100/(pasdetransport+pieds+deuxroues+voiture+transports)))
+
+
+### dans les communes 
+
+
+moyenstransport <- grenoble %>%
+  select(COMMUNE,TRANSM,IPONDL) %>% # sélection des colonnes
+  filter((!TRANSM %in% c("Z","Y"))) %>% # sélection des lignes
+  mutate(emplacement = as.character(TRANSM),
+         pasdetransport = case_when(TRANSM == "1" ~ IPONDL,!TRANSM == "1" ~ 0),
+         pieds = case_when(TRANSM == "2" ~ IPONDL,!TRANSM == "2" ~ 0),
+         deuxroues = case_when(TRANSM == "3" ~IPONDL, !TRANSM == "3" ~ 0),
+         voiture = case_when(TRANSM == "4" ~IPONDL, !TRANSM == "4" ~ 0),
+         transports = case_when(TRANSM == "5" ~IPONDL, !TRANSM == "5" ~ 0)) %>%
+  select(COMMUNE,pasdetransport, pieds, deuxroues, voiture, transports) %>% # sélection des variables à agréger
+  group_by(COMMUNE) %>% summarise_all(sum) %>% # agrégation par somme
+  mutate(pasdetransport=round(pasdetransport),
+         pieds=round(pieds),
+         deuxroues=round(deuxroues),
+         voiture=round(voiture),
+         transports=round(transports)) %>%
+  mutate(prctpasdetransport=((pasdetransport)*100/(pasdetransport+pieds+deuxroues+voiture+transports)),
+         prctpieds=((pieds)*100/(pasdetransport+pieds+deuxroues+voiture+transports)),
+         prctdeuxroues=((deuxroues)*100/(pasdetransport+pieds+deuxroues+voiture+transports)),
+         prctvoiture=((voiture)*100/(pasdetransport+pieds+deuxroues+voiture+transports)),
+         prcttransports=((transports)*100/(pasdetransport+pieds+deuxroues+voiture+transports)))
+
